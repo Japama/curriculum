@@ -1,0 +1,3 @@
+# Cloudflare Pages: redirección canónica y soporte de rutas del cliente.
+https://www.juanbautistavalero.com/* https://juanbautistavalero.com/:splat 301
+/* /index.html 200
