@@ -5,8 +5,12 @@ const env = import.meta.env
 /** Dominio canónico de la web. Configurable con VITE_SITE_URL. */
 export const SITE_URL: string = env.VITE_SITE_URL ?? 'https://juanbautistavalero.com'
 
-/** Placeholder claro: si no defines VITE_CONTACT_EMAIL, se ve este valor. */
-export const CONTACT_EMAIL: string = env.VITE_CONTACT_EMAIL ?? 'hola@juanbautistavalero.com'
+/**
+ * Email de contacto. Debe venir de VITE_CONTACT_EMAIL: `npm run build` comprueba
+ * la variable antes de empaquetar (scripts/check-env.mjs), así que aquí no hace
+ * falta un valor de relleno que acabaría publicado.
+ */
+export const CONTACT_EMAIL: string = env.VITE_CONTACT_EMAIL ?? ''
 
 export const bio = {
   name: 'Juan Bautista Valero Carrasco',

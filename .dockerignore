@@ -1,0 +1,17 @@
+# Dependencias y artefactos que no deben entrar en el contexto de build.
+# OJO: dist/ NO se excluye, es lo que copia el Dockerfile.
+node_modules
+build
+.git
+.github
+coverage
+*.log
+*.tsbuildinfo
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+Dockerfile
+docker-compose.yml
+README.md

@@ -52,8 +52,15 @@ Variables en `.env` (ver `.env.example`):
 | `VITE_SITE_URL` | Dominio canónico, sin barra final |
 | `VITE_CONTACT_EMAIL` | Email público de contacto |
 
-Si `VITE_CONTACT_EMAIL` no está definida, la web muestra
-`hola@juanbautistavalero.com` como valor de ejemplo: **cámbialo antes de publicar**.
+Ambas son **obligatorias y se comprueban antes de construir**: `npm run build`
+ejecuta `scripts/check-env.mjs` y aborta con un mensaje claro si falta alguna o
+tiene mal formato. Así nunca se publica un email de ejemplo.
+
+Las variables se sustituyen en tiempo de empaquetado (`import.meta.env`), no se
+leen en el navegador: cambiar el email exige **volver a construir**.
+
+Para los tests, `.env.test` aporta valores de relleno y están en `.gitignore`
+solo `.env*` locales (`.env`), no el de tests.
 
 ## Cómo editar el contenido
 
@@ -70,25 +77,39 @@ Si `VITE_CONTACT_EMAIL` no está definida, la web muestra
 
 ## Despliegue
 
-### Cloudflare Pages (recomendado)
+### Docker + nginx (servidor propio)
+
+El sitio ya construido se sirve con nginx en un contenedor. El build se hace en
+el host, así que **actualizar el sitio son dos comandos**:
+
+```bash
+npm run build
+docker compose up -d --build
+```
+
+Queda accesible en `http://<ip-de-la-maquina>:8088`. El servicio se llama
+`juanbautistavalero-web`, arranca con el sistema (`restart: unless-stopped`) y
+tiene healthcheck.
+
+- `Dockerfile` → imagen `nginx:alpine` que copia `dist/` y la configuración.
+- `docker/nginx.conf` → rutas del cliente (`try_files … /index.html`), gzip,
+  caché larga para assets con hash y sin caché para el HTML.
+- `docker/security-headers.conf` → cabeceras de seguridad, incluidas en cada
+  location (en nginx, `add_header` no se hereda si la location define las suyas).
+
+Para el dominio, se añade un **Proxy Host** en nginx-proxy-manager apuntando a
+la IP de la máquina y al puerto `8088`.
+
+### Cloudflare Pages
 
 1. **Workers & Pages** → *Create* → *Pages* → *Connect to Git*.
 2. Selecciona el repositorio `Japama/curriculum`.
 3. Build command: `npm run build` · Output directory: `dist`
-4. Variable de entorno: `VITE_CONTACT_EMAIL` con tu email real.
+4. Variables de entorno: `VITE_CONTACT_EMAIL` y `VITE_SITE_URL`.
 5. Añade el dominio `juanbautistavalero.com` en *Custom domains*.
 
 `public/_redirects` ya incluye el `www` → apex (301) y el fallback a
 `index.html`.
-
-### Docker
-
-```bash
-docker build -t web-personal .
-docker run -p 3000:3000 web-personal
-```
-
-El `Dockerfile` construye con `npm ci --include=dev` y sirve `dist/`.
 
 ## Estructura
 

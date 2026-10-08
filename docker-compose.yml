@@ -1,0 +1,28 @@
+# Despliegue local de juanbautistavalero.com
+#
+# Sirve el sitio ya construido (dist/) con nginx. El build se hace en el host
+# con `npm run build`, así que para actualizar el sitio basta:
+#
+#   npm run build && docker compose up -d --build
+#
+# Acceso directo: http://<ip-de-esta-maquina>:8088
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: juanbautistavalero-web:local
+    container_name: juanbautistavalero-web
+    restart: unless-stopped
+    ports:
+      - '8088:80'
+    # Para que el contenedor se vea también por el dominio, igual que el host.
+    extra_hosts:
+      - 'juanbautistavalero.com:host-gateway'
+      - 'www.juanbautistavalero.com:host-gateway'
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1/robots.txt']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

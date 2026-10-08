@@ -8,7 +8,7 @@ build/
 # artefactos de TypeScript
 *.tsbuildinfo
 
-# variables de entorno (el ejemplo sí se versiona)
+# variables de entorno (el ejemplo y el de tests sí se versionan)
 .env
 .env.local
 .env.development.local
